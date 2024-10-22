@@ -2,8 +2,9 @@ import Breaker from '@/src/components/Breaker';
 import Button from '@/src/components/Button';
 import ButtonOutline from '@/src/components/ButtonOutline';
 import { AntDesign } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, ActivityIndicator, Dimensions, Pressable } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -13,6 +14,9 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Use navigation hook
+  const { navigate: navigateAuth }: NavigationProp<AuthNavigationType> = useNavigation()
 
   return (
     <View className="flex-1">
@@ -44,7 +48,7 @@ const LoginScreen = () => {
               className="text-neutral-800 text-2xl"
               style={{
                 fontFamily: 'PlusJakartaSansBold',
-                lineHeight: 60, // replaces leading in Tailwind-like syntax
+                lineHeight: 60,
               }}
             >
               Welcome Back, User
@@ -59,10 +63,8 @@ const LoginScreen = () => {
             className="py-8 space-y-8"
             entering={FadeInDown.duration(100).delay(200).springify()}
           >
-            {/* Email*/}
-            <View
-              className="border-2 border-gray-400 rounded-lg"
-            >
+            {/* Email */}
+            <View className="border-2 border-gray-400 rounded-lg">
               <TextInput
                 className="p-4"
                 onChangeText={(text) => setEmail(text)}
@@ -72,39 +74,35 @@ const LoginScreen = () => {
               />
             </View>
 
-            {/*Password*/}
-            <View
-              className="border-2 border-gray-400 rounded-lg"
-            >
+            {/* Password */}
+            <View className="border-2 border-gray-400 rounded-lg">
               <TextInput
                 className="p-4"
                 onChangeText={(text) => setPassword(text)}
                 value={password}
                 placeholder="Password"
+                secureTextEntry
                 autoCapitalize="none"
               />
             </View>
-
           </Animated.View>
 
           {/* Login Button */}
-
           <Animated.View
             className="w-full justify-start"
             entering={FadeInDown.duration(100).delay(300).springify()}
           >
             <View className="pb-6">
-              <Button title={"Login"} />
-
+              <Button title="Login" />
             </View>
-
           </Animated.View>
 
-          {/* Breaker Line*/}
+          {/* Breaker Line */}
           <View>
             <Breaker />
           </View>
-          {/* 3rd Party Auth*/}
+
+          {/* 3rd Party Auth */}
           <View className="w-full justify-normal">
             <Animated.View
               entering={FadeInDown.duration(100).delay(600).springify()}
@@ -114,9 +112,9 @@ const LoginScreen = () => {
                 <AntDesign name="google" size={20} color="gray" />
               </ButtonOutline>
             </Animated.View>
-
           </View>
-          {/* Don't have an account*/}
+
+          {/* Don't have an account */}
           <Animated.View
             className="flex-row justify-center"
             entering={FadeInDown.duration(100).delay(700).springify()}
@@ -129,19 +127,20 @@ const LoginScreen = () => {
             >
               Don't have an account?
             </Text>
-            <Text
-              className="text-primary-500 text-lg font-medium ml-2"
-              style={{
-                fontFamily: 'PlusJakartaSansBold',
-              }}
-            >
-              Register
-            </Text>
+
+            <Pressable onPress={() => navigateAuth('Register')}>
+              <Text
+                className="text-primary-800 text-lg font-medium leading-[38px]"
+                style={{
+                  fontFamily: 'PlusJakartaSansBold',
+                }}
+              >
+                Register{" "}
+              </Text>
+            </Pressable>
           </Animated.View>
         </View>
       </View>
-
-
     </View>
   );
 };
