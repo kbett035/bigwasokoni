@@ -1,50 +1,87 @@
-# Welcome to your Expo app 👋
+Mobisokoni
+Mobisokoni is a mobile application designed to automate USSD code dialing in the background, enabling users to perform other tasks on their phones while their business operations, such as managing data bundle purchases, run seamlessly. It is built for Bingwa Sokini agents, who handle mobile data purchases and delivery for their clients.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Features
+Automated USSD Dialing: Mobisokoni runs in the background, dialing USSD codes for data bundles and other services automatically.
+Agent and Admin Dashboards: Two distinct dashboards tailored for agents and administrators to manage services and users.
+Clerk Authentication: Secure login and registration process powered by Clerk.
+Subscription Management: Agents pay for monthly subscriptions via MPESA through Paystack.
+Transaction Tracking: View transaction history and retrieve phone numbers for SMS campaigns.
+Airtime Management: Check and recharge airtime balances directly from the app.
+Onboarding Guide: New users are guided through an onboarding process with slides that explain the app, followed by an option to log in or register.
+Tech Stack
+React Native: For building the mobile app.
+TypeScript: For type-safe and scalable code.
+Clerk: For authentication and user management.
+Paystack: For payment processing of monthly subscriptions.
+MPESA: Integration for receiving payments from clients.
+Installation
+To install and run Mobisokoni on your local development environment, follow these steps:
 
-## Get started
+Clone the repository:
 
-1. Install dependencies
+bash
+Copy code
+git clone https://github.com/yourusername/mobisokoni.git
+cd mobisokoni
+Install dependencies:
 
-   ```bash
-   npm install
-   ```
+bash
+Copy code
+npm install
+Start the development server:
 
-2. Start the app
+bash
+Copy code
+npm run start
+Run the app on a device or emulator:
 
-   ```bash
-    npx expo start
-   ```
+bash
+Copy code
+npm run android # for Android
+npm run ios     # for iOS
+Directory Structure
+plaintext
+Copy code
+/src
+  ├── components/
+  │   ├── AdminDashboard/
+  │   ├── AgentDashboard/
+  │   ├── AgentManagement/
+  ├── screens/
+  │   ├── HomeScreen.js
+  │   ├── OnboardingScreen.js
+  │   ├── AdmindashboardScreen.js
+  │   ├── AgentdashboardScreen.js
+  └── App.js
+App.js: Contains the main navigation setup.
+OnboardingScreen.js: Guides users through the app with slides before login.
+HomeScreen.js: Displays a welcome message upon successful login.
+AdmindashboardScreen.js: Displays the admin dashboard with management tools.
+AgentdashboardScreen.js: Displays the agent dashboard for individual agents.
+AgentManagement/: Handles management features for agents (create, update, view details, etc.).
+Usage
+Onboarding: After installing the app, users are taken through an onboarding guide.
+Authentication: Users must log in or register via Clerk to access the app.
+Agent Dashboard: Once logged in, agents can view their dashboard, manage transactions, and input USSD codes.
+Admin Dashboard: Administrators can manage agents and track performance from their own dashboard.
+Permissions
+The Mobisokoni app requires the following permissions:
 
-In the output, you'll find options to open the app in a
+Background Service: To run USSD code dialing while other tasks are performed.
+Network Access: To interact with MPESA and Paystack for payments.
+SMS: For retrieving phone numbers to send SMS campaigns.
+Future Features
+USSD Error Handling: Automatically retry USSD codes if they fail.
+Advanced Reporting: Allow agents and admins to generate detailed business reports.
+Notifications: Alerts for successful transactions and low airtime or data balances.
+Contributing
+We welcome contributions! Please follow these steps:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Fork the repository.
+Create a new branch (git checkout -b feature/new-feature).
+Commit your changes (git commit -m 'Add new feature').
+Push to the branch (git push origin feature/new-feature).
+Create a pull request.
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
