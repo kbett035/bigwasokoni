@@ -1,12 +1,14 @@
+import { supabase } from '@/lib/supabase';
 import Breaker from '@/src/components/Breaker';
 import Button from '@/src/components/Button';
 import ButtonOutline from '@/src/components/ButtonOutline';
 import { AntDesign } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useState } from 'react';
-import { View, Text, ActivityIndicator, Dimensions, Pressable } from 'react-native';
+import { View, Text, ActivityIndicator, Dimensions, Pressable, Alert } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useUserStore } from "@/store/useUserStore";
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,9 +16,36 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
+  const { setUser, setSession } = useUserStore()
   // Use navigation hook
   const { navigate: navigateAuth }: NavigationProp<AuthNavigationType> = useNavigation()
+ 
+  async function signInWithEmail() {
+    setIsLoading(true);
+
+  
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        setIsLoading(false);
+        Alert.alert('Login Failed', error.message);
+        return;
+      }
+
+      if (data.session && data.user) {
+        setSession(data.session);
+        setUser(data.user);
+      }
+
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <View className="flex-1">
@@ -51,10 +80,10 @@ const LoginScreen = () => {
                 lineHeight: 60,
               }}
             >
-              Welcome Back, User
+              Welcome Back, User!
             </Text>
-            <Text className="text-neutral-500 text-sm font-medium">
-              Welcome back! Please enter your details
+            <Text className="text-neutral-500 justify-center text-center text-sm font-medium">
+              Log in to continue growing your business seamlessly.
             </Text>
           </Animated.View>
 
@@ -93,7 +122,7 @@ const LoginScreen = () => {
             entering={FadeInDown.duration(100).delay(300).springify()}
           >
             <View className="pb-6">
-              <Button title="Login" />
+              <Button title="Login" action={() => signInWithEmail()} />
             </View>
           </Animated.View>
 

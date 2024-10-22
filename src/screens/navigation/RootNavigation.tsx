@@ -3,12 +3,13 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import { NavigationContainer } from '@react-navigation/native';
 import AuthNavigation from './AuthNavigation'; // Ensure these imports are correct
 import TabNavigation from './TabNavigation';
+import { useUserStore } from '@/store/useUserStore';
 
 // Initialize the stack navigator
 const Stack = createStackNavigator();
 
 const RootNavigation = () => {
-    const [session, setSession] = useState(false); // Default is false for non-authenticated users
+    const {session} = useUserStore();
 
     return (
         <NavigationContainer>
@@ -20,7 +21,7 @@ const RootNavigation = () => {
                     gestureEnabled: true,
                     gestureDirection: "horizontal"
                 }}>
-                {session ? (
+                {session && session.user? (
                     // If authenticated, show the TabNavigation (e.g., for app's main flow)
                     <Stack.Screen
                         name="TabNavigation"
