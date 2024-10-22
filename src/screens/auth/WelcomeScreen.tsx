@@ -8,11 +8,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Breaker from "../../components/Breaker"
 import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 const blurhash =
   '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
 const WelcomeScreen = () => {
+  const { navigate: navigateAuth }: NavigationProp<AuthNavigationType> = useNavigation();
+
   return (
     <SafeAreaView className="flex-1 justify-center items-center bg-white">
       <StatusBar style="auto" />
@@ -60,14 +62,15 @@ const WelcomeScreen = () => {
 
             className="pb-6"
           >
-            <Button title="Login" />
+            <Button title="Login" action={()=> navigateAuth ("Login")} />
           </Animated.View>
+
           <Animated.View
             entering={FadeInDown.duration(100).delay(400).springify()
 
             }
           >
-            <ButtonOutline title="Sign Up" />
+            <ButtonOutline title="Sign Up"  action={()=> navigateAuth ("Register")} />
           </Animated.View>
 
 
