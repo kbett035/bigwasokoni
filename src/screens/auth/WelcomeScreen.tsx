@@ -83,7 +83,7 @@ const WelcomeScreen = () => {
         <View className="w-full justify-normal">
           <Animated.View
             entering={FadeInDown.duration(100).delay(600).springify()}
-            className="border border-white pb-4"
+            className="pb-4"
           >
             <ButtonOutline title="Continue with Google">
               <AntDesign name="google" size={20} color="gray" />
