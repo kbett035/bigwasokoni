@@ -6,6 +6,7 @@ import OffersNavigation from './OffersNavigation';
 import HistoryNavigation from './HistoryNavigation';
 import AlertsNavigation from './AlertsNavigation';
 import ProfileNavigation from './ProfileNavigation';
+import { TransitionPresets } from '@react-navigation/stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -35,6 +36,16 @@ const TabNavigation = () => {
                 />
               );
             },
+            tabBarActiveTintColor: "#164b48",
+            tabBarInactiveTintColor: "gray",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: "bold"
+            },
+            ...TransitionPresets.SlideFromRightIOS,
+            animationEnable: true,
+            gestureEnable: true,
+            gestureDirection: "horizontal"
           };
         }
       }
