@@ -43,8 +43,8 @@ const TabNavigation = () => {
               fontWeight: "bold"
             },
             ...TransitionPresets.SlideFromRightIOS,
-            animationEnable: true,
-            gestureEnable: true,
+            animationEnabled: true,
+            gestureEnabled: true,
             gestureDirection: "horizontal"
           };
         }
