@@ -4,10 +4,9 @@ import { useUserStore } from '@/store/useUserStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from "expo-image";
-
 
 const HomeScreen = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -39,6 +38,12 @@ const HomeScreen = () => {
     }
   }
 
+  // Refresh balance function
+  const handleRefreshBalance = () => {
+    console.log("Balance refreshed!");
+    // Implement your logic here to refresh the balance.
+  };
+
   useFocusEffect(
     useCallback(() => {
       if (session) {
@@ -53,7 +58,6 @@ const HomeScreen = () => {
 
         {/* Header */}
         <View className="w-full flex-row justify-between items-center px-4">
-
           <View className="w-3/4 flex-row space-x-2">
             <View className="justify-center items-center">
               <View className="h-12 w-12 rounded-2xl overflow-hidden">
@@ -79,22 +83,31 @@ const HomeScreen = () => {
               <Ionicons name="menu" size={24} color="white" />
             </View>
           </View>
-
         </View>
-        {/* Balance */}
 
+        {/* Balance */}
         <View className="mx-4 bg-neutral-800 rounded-[34px] overflow-hidden mt-4 mb-4">
-          <View className="bg-[#0DF69E] justify-center items-center py-6 rounded-[34px] ">
+          <View className="bg-[#0DF69E] py-6 px-4 rounded-[34px] justify-center items-center">
+            {/* Airtime Balance Title */}
             <Text className="text-sm font-medium text-neutral-700">
               Airtime Balance
             </Text>
 
-            <Text className="text-3xl font-extrabold">
-             2,345.00
-            </Text>
+            {/* Balance and Refresh Icon Row */}
+            <View className="flex-row items-center space-x-2 mt-2">
+              <Text className="text-3xl font-extrabold">
+                2,345.00
+              </Text>
 
+              {/* Refresh Icon */}
+              <TouchableOpacity onPress={handleRefreshBalance}>
+                <Ionicons name="refresh" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
+
           <View className="justify-between items-center flex-row py-4">
+            {/* Send To */}
             <View className="w-1/4 justify-center items-center space-y-2">
               <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
                 <Image
@@ -105,9 +118,56 @@ const HomeScreen = () => {
                   className="w-full h-full flex-1"
                 />
               </View>
+              <Text className="text-white">Send To</Text>
+            </View>
+            {/* Request */}
+            <View className="w-1/4 justify-center items-center space-y-2">
+              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                <Image
+                  source={require("../../../../assets/images/money-receive.png")}
+                  placeholder={blurhash}
+                  contentFit="cover"
+                  transition={1000}
+                  className="w-full h-full flex-1"
+                />
+              </View>
+              <Text className="text-white">Request</Text>
+            </View>
+            {/* Send To */}
+            <View className="w-1/4 justify-center items-center space-y-2">
+              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                <Image
+                  source={require("../../../../assets/images/card-add.png")}
+                  placeholder={blurhash}
+                  contentFit="cover"
+                  transition={1000}
+                  className="w-full h-full flex-1"
+                />
+              </View>
               <Text className="text-white">Top Up</Text>
             </View>
+            {/* More */}
+            <View className="w-1/4 justify-center items-center space-y-2">
+              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                <Image
+                  source={require("../../../../assets/images/more.png")}
+                  placeholder={blurhash}
+                  contentFit="cover"
+                  transition={1000}
+                  className="w-full h-full flex-1"
+                />
+              </View>
+              <Text className="text-white">More</Text>
+            </View>
+
+
+
+
+
+
+
           </View>
+
 
         </View>
       </View>
