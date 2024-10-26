@@ -1,5 +1,6 @@
 import useSupabaseAuth from '@/hooks/useSupabaseAuth';
 import Avatar from '@/src/components/Avatar';
+import Transactions from '@/src/components/Transactions'; // Import the Transactions component
 import { useUserStore } from '@/store/useUserStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -173,6 +174,11 @@ const HomeScreen = () => {
             </View>
           </View>
         </View>
+
+        {/* Transactions Section */}
+        {session && session.user && (
+          <Transactions userId={session.user.id} /> // Pass the user ID to the Transactions component
+        )}
       </View>
     </SafeAreaView>
   );
