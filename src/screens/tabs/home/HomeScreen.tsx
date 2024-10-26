@@ -52,6 +52,18 @@ const HomeScreen = () => {
     }, [session])
   );
 
+  // Function to get the greeting message based on the time of day
+  const getGreetingMessage = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour < 12) {
+      return "Good morning";
+    } else if (currentHour < 14) {
+      return "Good afternoon";
+    } else {
+      return "Good evening";
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="relative">
@@ -72,8 +84,8 @@ const HomeScreen = () => {
             </View>
 
             <View>
-              <Text className="text-lg font-bold">Hi, {username ? username : "User"}</Text>
-              <Text className="text-sm text-neutral-500">Have a good day</Text>
+              <Text className="text-lg font-bold">Hi, {username ? username : "User"} 👋</Text>
+              <Text className="text-sm text-neutral-500">{getGreetingMessage()}</Text>
             </View>
           </View>
 
@@ -133,7 +145,7 @@ const HomeScreen = () => {
               </View>
               <Text className="text-white">Request</Text>
             </View>
-            {/* Send To */}
+            {/* Top Up */}
             <View className="w-1/4 justify-center items-center space-y-2">
               <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
                 <Image
@@ -159,20 +171,11 @@ const HomeScreen = () => {
               </View>
               <Text className="text-white">More</Text>
             </View>
-
-
-
-
-
-
-
           </View>
-
-
         </View>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 export default HomeScreen;
