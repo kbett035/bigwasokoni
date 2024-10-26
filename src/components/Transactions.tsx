@@ -1,30 +1,22 @@
 import { supabase } from '@/lib/supabase';
 import { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 
 interface Transaction {
   transaction_id: string;
   user_id: string;
-  customer_id: string;
   transaction_type: string;
   amount: number;
-  phone_number: string;
   date_time: string;
   status: string;
-  payment_method: string;
-  mpesa_transaction_code: string;
-  data_bundle_size: number;
-  sms_count: number | null;
-  notification_status: boolean;
-  remarks: string;
-  alert_flag: boolean;
 }
 
 interface Props {
-  userId: string; // Pass the user's ID as a prop
+  userId: string;
+  onViewAll: () => void; // Function to handle "View All" press
 }
 
-const Transactions = ({ userId }: Props) => {
+const Transactions = ({ userId, onViewAll }: Props) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,14 +28,12 @@ const Transactions = ({ userId }: Props) => {
     try {
       const { data, error } = await supabase
         .from('transactions')
-        .select('*') // Fetch all columns; adjust as necessary
-        .eq('user_id', userId); // Use the passed userId prop
+        .select('transaction_id, user_id, transaction_type, amount, date_time, status')
+        .eq('user_id', userId)
+        .limit(5); // Limit to show only recent transactions
 
-      if (error) {
-        throw error;
-      }
-
-      setTransactions(data || []); // Set to an empty array if data is null
+      if (error) throw error;
+      setTransactions(data || []);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error fetching transactions: ', error.message);
@@ -55,12 +45,15 @@ const Transactions = ({ userId }: Props) => {
 
   const renderTransactionItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
-      <Text style={styles.transactionText}>Transaction ID: {item.transaction_id}</Text>
-      <Text style={styles.transactionText}>Type: {item.transaction_type}</Text>
-      <Text style={styles.transactionText}>Amount: Ksh {item.amount}</Text>
-      <Text style={styles.transactionText}>Date: {new Date(item.date_time).toLocaleString()}</Text>
-      <Text style={styles.transactionText}>Status: {item.status}</Text>
-      <Text style={styles.transactionText}>Remarks: {item.remarks}</Text>
+      <View style={styles.transactionDetails}>
+        <Text style={styles.transactionId}>
+          {item.transaction_id.slice(0, 8)}... {/* Truncate transaction ID */}
+        </Text>
+        <Text style={styles.transactionInfo}>
+          {new Date(item.date_time).toLocaleString()} - {item.status}
+        </Text>
+      </View>
+      <Text style={styles.transactionAmount}>Ksh {item.amount.toFixed(2)}</Text>
     </View>
   );
 
@@ -69,33 +62,88 @@ const Transactions = ({ userId }: Props) => {
   }
 
   return (
-    <FlatList
-      data={transactions}
-      renderItem={renderTransactionItem}
-      keyExtractor={(item) => item.transaction_id}
-      contentContainerStyle={styles.container}
-    />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Recent Transactions</Text>
+        <TouchableOpacity onPress={onViewAll}>
+          <Text style={styles.viewAll}>View All</Text>
+        </TouchableOpacity>
+      </View>
+      {transactions.length === 0 ? (
+        <Text style={styles.noTransactions}>No transactions found.</Text> // Display message when no transactions
+      ) : (
+        <FlatList
+          data={transactions}
+          renderItem={renderTransactionItem}
+          keyExtractor={(item) => item.transaction_id}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: '#f7f7f7',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  viewAll: {
+    fontSize: 16,
+    color: '#1e90ff',
+    fontWeight: '600',
+  },
+  listContainer: {
+    paddingBottom: 16,
   },
   transactionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#fff',
     padding: 16,
     marginVertical: 8,
-    borderRadius: 5,
+    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
   },
-  transactionText: {
+  transactionDetails: {
+    flexDirection: 'column',
+  },
+  transactionId: {
     fontSize: 16,
-    marginBottom: 4,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  transactionInfo: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  noTransactions: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

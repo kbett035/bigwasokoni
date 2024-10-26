@@ -177,7 +177,9 @@ const HomeScreen = () => {
 
         {/* Transactions Section */}
         {session && session.user && (
-          <Transactions userId={session.user.id} /> // Pass the user ID to the Transactions component
+          <Transactions userId={session.user.id} onViewAll={function (): void {
+            throw new Error('Function not implemented.');
+          } } /> // Pass the user ID to the Transactions component
         )}
       </View>
     </SafeAreaView>
