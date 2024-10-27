@@ -182,6 +182,7 @@ const HomeScreen = () => {
           } } /> // Pass the user ID to the Transactions component
         )}
       </View>
+      
     </SafeAreaView>
   );
 };

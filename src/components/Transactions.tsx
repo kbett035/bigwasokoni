@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   viewAll: {
     fontSize: 16,
-    color: '#1e90ff',
+    color: '#262626',
     fontWeight: '600',
   },
   listContainer: {
