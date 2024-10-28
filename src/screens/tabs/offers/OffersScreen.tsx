@@ -1,75 +1,42 @@
-import useSupabaseAuth from '@/hooks/useSupabaseAuth';
-import { useUserStore } from '@/store/useUserStore';
-import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useUserStore } from '@/store/useUserStore'; 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from "expo-image";
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Offers from '@/src/components/Offers';
 
-const OfferScreen = () => {
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { getUserProfile } = useSupabaseAuth();
+const OffersScreen = () => {
   const { session } = useUserStore();
+  const [activeTab, setActiveTab] = useState<'All' | 'Data' | 'SMS'>('All'); // Default to 'All'
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const blurhash = "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
-  // Function to fetch user profile
-  async function handleGetProfile() {
-    setLoading(true);
-    try {
-      const { data, error, status } = await getUserProfile();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setUsername(data.username);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-    } finally {
-      setLoading(false); // Ensures loading is set to false in both cases
-    }
-  }
-
-  useFocusEffect(
-    useCallback(() => {
-      if (session) {
-        handleGetProfile();
-      }
-    }, [session])
-  );
-
-  // Function to get the greeting message based on the time of day
-  const getGreetingMessage = () => {
-    const currentHour = new Date().getHours();
-    if (currentHour < 12) {
-      return "Good morning";
-    } else if (currentHour < 14) {
-      return "Good afternoon";
-    } else {
-      return "Good evening";
-    }
+  const handleTabPress = (tab: 'All' | 'Data' | 'SMS') => {
+    setActiveTab(tab);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerContainer}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Offers</Text>
-        </View>
+        <Text style={styles.headerText}>My Offers</Text>
       </View>
 
-      {/* Offers */}
-      <View style={styles.offersContainer}>
-        <Offers userId={''} onViewAll={() => { /* Handle View All */ }} />
+      {/* Tabs for All, Data, SMS */}
+      <View style={styles.tabsContainer}>
+        {['All', 'Data', 'SMS'].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            onPress={() => handleTabPress(tab as 'All' | 'Data' | 'SMS')}
+            style={[styles.tab, activeTab === tab && styles.activeTab]}
+          >
+            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Transaction History */}
+      <View style={styles.historyContainer}>
+        <Offers userId={session?.user.id || ''} filter={activeTab} searchQuery={searchQuery} />
       </View>
     </SafeAreaView>
   );
@@ -81,22 +48,40 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   headerContainer: {
-    paddingBottom: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingVertical: 20,
     paddingHorizontal: 16,
-    // Add any other styles you want for your header here
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
   },
-  offersContainer: {
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
+  tab: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  activeTab: {
+    backgroundColor: '#0DF69E',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  activeTabText: {
+    color: 'white',
+  },
+  historyContainer: {
     flex: 1,
-    justifyContent: 'flex-end', // This makes the Offers component align at the bottom
+    paddingHorizontal: 16,
+    paddingBottom: 20, // Add padding to the bottom if needed
   },
 });
 
-export default OfferScreen;
+export default OffersScreen;
