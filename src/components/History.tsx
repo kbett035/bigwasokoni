@@ -9,38 +9,38 @@ interface Transaction {
   amount: number;
   date_time: string;
   status: string;
+  phone_number?: string; // Add phone_number field to interface
 }
 
 interface Props {
   userId: string;
-  filter: string; // Accepting filter for transaction type (All, Data, SMS)
-  searchQuery: string; // Accepting search query to filter transactions by search text
+  filter: string;
+  searchQuery: string;
 }
 
 const History = ({ userId, filter, searchQuery }: Props) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [query, setQuery] = useState(searchQuery); // Local state for search query
+  const [query, setQuery] = useState(searchQuery);
 
   useEffect(() => {
     fetchTransactions();
-  }, [filter]); // Fetch transactions when filter changes
+  }, [filter]);
 
   useEffect(() => {
     handleSearch(query);
-  }, [query]); // Filter transactions based on search query
+  }, [query]);
 
   const fetchTransactions = async () => {
     setLoading(true);
     try {
       let query = supabase
         .from('transactions')
-        .select('transaction_id, user_id, transaction_type, amount, date_time, status')
+        .select('transaction_id, user_id, transaction_type, amount, date_time, status, phone_number')
         .eq('user_id', userId)
         .order('date_time', { ascending: false });
 
-      // Apply filter for transaction type
       if (filter !== 'All') {
         query = query.eq('transaction_type', filter);
       }
@@ -49,7 +49,7 @@ const History = ({ userId, filter, searchQuery }: Props) => {
 
       if (error) throw error;
       setTransactions(data || []);
-      setFilteredTransactions(data || []); // Initialize filtered transactions
+      setFilteredTransactions(data || []);
     } catch (error) {
       if (error instanceof Error) {
         Alert.alert('Error fetching transactions: ', error.message);
@@ -59,18 +59,17 @@ const History = ({ userId, filter, searchQuery }: Props) => {
     }
   };
 
-  // Search function to filter transactions based on search query
   const handleSearch = (text: string) => {
     setQuery(text);
 
-    // Filter transactions based on search query
     if (text) {
       const filtered = transactions.filter((transaction) =>
-        transaction.transaction_id.toLowerCase().includes(text.toLowerCase())
+        transaction.transaction_id.toLowerCase().includes(text.toLowerCase()) ||
+        (transaction.phone_number && transaction.phone_number.includes(text))
       );
       setFilteredTransactions(filtered);
     } else {
-      setFilteredTransactions(transactions); // If no search query, show all transactions
+      setFilteredTransactions(transactions);
     }
   };
 
@@ -80,25 +79,23 @@ const History = ({ userId, filter, searchQuery }: Props) => {
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    // Check if the transaction is today or yesterday
     const isToday = transactionDate.toDateString() === today.toDateString();
     const isYesterday = transactionDate.toDateString() === yesterday.toDateString();
 
-    // Format the display for date and time
     let displayDate;
     if (isToday) {
       displayDate = `Today at ${transactionDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else if (isYesterday) {
       displayDate = `Yesterday at ${transactionDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else {
-      displayDate = transactionDate.toLocaleString(); // Show full date and time for older transactions
+      displayDate = transactionDate.toLocaleString();
     }
 
     return (
       <View style={styles.transactionItem}>
         <View style={styles.transactionDetails}>
           <Text style={styles.transactionId}>
-            {item.transaction_id.slice(0, 8)}... {/* Truncate transaction ID */}
+            {item.transaction_id.slice(0, 8)}...
           </Text>
           <Text style={styles.transactionInfo}>
             {displayDate} - {item.status}
@@ -115,19 +112,18 @@ const History = ({ userId, filter, searchQuery }: Props) => {
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by transaction ID..."
+        placeholder="Search by transaction ID or phone number..."
         value={query}
-        onChangeText={handleSearch} // Update search as the user types
+        onChangeText={handleSearch}
       />
 
       {filteredTransactions.length === 0 ? (
         <Text style={styles.noTransactions}>No transactions found.</Text>
       ) : (
         <FlatList
-          data={filteredTransactions} // Display filtered transactions
+          data={filteredTransactions}
           renderItem={renderTransactionItem}
           keyExtractor={(item) => item.transaction_id}
           contentContainerStyle={styles.listContainer}

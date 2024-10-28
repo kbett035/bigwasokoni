@@ -1,6 +1,5 @@
 import useSupabaseAuth from '@/hooks/useSupabaseAuth';
 import Avatar from '@/src/components/Avatar';
-import Transactions from '@/src/components/Transactions'; // Import the Transactions component
 import { useUserStore } from '@/store/useUserStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,6 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from "expo-image";
+import UsageGraph from '@/src/components/UsageGraph';
 
 const HomeScreen = () => {
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -177,9 +177,9 @@ const HomeScreen = () => {
 
         {/* Transactions Section */}
         {session && session.user && (
-          <Transactions userId={session.user.id} onViewAll={function (): void {
-            throw new Error('Function not implemented.');
-          } } /> // Pass the user ID to the Transactions component
+          <View className="w-full justify-center items-center mt-4"> 
+          <UsageGraph/> 
+          </View>
         )}
       </View>
       
