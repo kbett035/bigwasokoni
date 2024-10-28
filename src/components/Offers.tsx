@@ -8,7 +8,7 @@ interface Offer {
   ussd_code: string;
   data: string;
   sms: string;
-  offers_type: string;
+  offers_type: string; // Not rendered anymore
   amount: number;
   created_at: string;
 }
@@ -74,14 +74,26 @@ const Offers = ({ userId, filter, searchQuery }: Props) => {
   };
 
   const renderOfferItem = ({ item }: { item: Offer }) => {
-    const offerDate = new Date(item.created_at).toLocaleString();
+    const offerDate = new Date(item.created_at);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    let displayDate;
+    
+    if (offerDate.toDateString() === today.toDateString()) {
+      displayDate = 'Today';
+    } else if (offerDate.toDateString() === yesterday.toDateString()) {
+      displayDate = 'Yesterday';
+    } else {
+      displayDate = offerDate.toLocaleDateString(); // Formats the date in the default format (e.g., 10/27/2024)
+    }
 
     return (
       <View style={styles.offerItem}>
         <View style={styles.offerDetails}>
           <Text style={styles.ussdCode}>{item.ussd_code}</Text>
-          <Text style={styles.offerDate}>{offerDate}</Text>
-          <Text style={styles.offerType}>{item.offers_type}</Text>
+          <Text style={styles.offerDate}>{displayDate}</Text>
         </View>
         <Text style={styles.offerAmount}>Ksh {item.amount.toFixed(2)}</Text>
       </View>
@@ -159,10 +171,6 @@ const styles = StyleSheet.create({
   offerDate: {
     fontSize: 14,
     color: '#666',
-  },
-  offerType: {
-    fontSize: 14,
-    color: '#888',
   },
   offerAmount: {
     fontSize: 16,

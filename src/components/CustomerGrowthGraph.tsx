@@ -13,7 +13,7 @@ interface AggregatedData {
   [date: string]: number;
 }
 
-const UsageGraph = () => {
+const CustomerGrowthGraph = () => {
   const screenWidth = Dimensions.get('window').width;
   const { session } = useUserStore();
 
@@ -93,7 +93,7 @@ const UsageGraph = () => {
 
   return (
     <View style={{ paddingVertical: 20 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 , textAlign:"center"  }}>Transaction Overview</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 , textAlign:"center"  }}>Customer Growth</Text>
       
       {/* View selection buttons */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
@@ -138,4 +138,4 @@ const UsageGraph = () => {
   );
 };
 
-export default UsageGraph;
+export default CustomerGrowthGraph;
