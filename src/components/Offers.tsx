@@ -8,7 +8,7 @@ interface Offer {
   ussd_code: string;
   data: string;
   sms: string;
-  offers_type: string; // Not rendered anymore
+  offers_type: string;
   amount: number;
   created_at: string;
 }
@@ -80,13 +80,13 @@ const Offers = ({ userId, filter, searchQuery }: Props) => {
     yesterday.setDate(today.getDate() - 1);
 
     let displayDate;
-    
+
     if (offerDate.toDateString() === today.toDateString()) {
-      displayDate = 'Today';
+      displayDate = `Today at ${offerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else if (offerDate.toDateString() === yesterday.toDateString()) {
-      displayDate = 'Yesterday';
+      displayDate = `Yesterday at ${offerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     } else {
-      displayDate = offerDate.toLocaleDateString(); // Formats the date in the default format (e.g., 10/27/2024)
+      displayDate = `${offerDate.toLocaleDateString()} at ${offerDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     }
 
     return (

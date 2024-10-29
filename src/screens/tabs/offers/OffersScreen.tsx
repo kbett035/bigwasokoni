@@ -1,8 +1,9 @@
-import { useUserStore } from '@/store/useUserStore'; 
+import { useUserStore } from '@/store/useUserStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Offers from '@/src/components/Offers';
+import AddOffer from '@/src/components/AddOffer';
 
 const OffersScreen = () => {
   const { session } = useUserStore();
@@ -34,12 +35,23 @@ const OffersScreen = () => {
         ))}
       </View>
 
+
       {/* Transaction History */}
       <View style={styles.historyContainer}>
         <Offers userId={session?.user.id || ''} filter={activeTab} searchQuery={searchQuery} />
       </View>
+
+      {/* Add Offer Button */}
+      <View>
+        <AddOffer />
+      </View>
     </SafeAreaView>
+
+
   );
+
+
+
 };
 
 const styles = StyleSheet.create({

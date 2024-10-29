@@ -98,70 +98,70 @@ const HomeScreen = () => {
           {/* Balance */}
           <View className="mx-4 bg-neutral-800 rounded-[34px] overflow-hidden mt-4 mb-4">
             <View className="bg-[#0DF69E] py-6 px-4 rounded-[34px] justify-center items-center">
-              <Text className="text-sm font-medium text-neutral-700">Airtime Balance</Text>
+              <Text className="text-lg font-medium text-neutral-700">Airtime Balance</Text>
               <View className="flex-row items-center space-x-2 mt-2">
-                <Text className="text-3xl font-extrabold">2,345.00</Text>
+                <Text className="text-3xl font-extrabold">4545.00</Text>
                 <TouchableOpacity onPress={handleRefreshBalance}>
                   <Ionicons name="refresh" size={24} color="black" />
                 </TouchableOpacity>
               </View>
             </View>
-
-            <View className="justify-between items-center flex-row py-4">
             {/* Send To */}
-            <View className="w-1/4 justify-center items-center space-y-2">
-              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
-                <Image
-                  source={require("../../../../assets/images/money-send.png")}
-                  placeholder={blurhash}
-                  contentFit="cover"
-                  transition={1000}
-                  className="w-full h-full flex-1"
-                />
+            <View className="justify-between items-center flex-row py-4">
+
+              <View className="w-1/4 justify-center items-center space-y-2">
+                <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                  <Image
+                    source={require("../../../../assets/images/money-send.png")}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={1000}
+                    className="w-full h-full flex-1"
+                  />
+                </View>
+                <Text className="text-white">Send To</Text>
               </View>
-              <Text className="text-white">Send To</Text>
-            </View>
-            {/* Request */}
-            <View className="w-1/4 justify-center items-center space-y-2">
-              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
-                <Image
-                  source={require("../../../../assets/images/money-receive.png")}
-                  placeholder={blurhash}
-                  contentFit="cover"
-                  transition={1000}
-                  className="w-full h-full flex-1"
-                />
+              {/* Request */}
+              <View className="w-1/4 justify-center items-center space-y-2">
+                <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                  <Image
+                    source={require("../../../../assets/images/money-receive.png")}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={1000}
+                    className="w-full h-full flex-1"
+                  />
+                </View>
+                <Text className="text-white">Request</Text>
               </View>
-              <Text className="text-white">Request</Text>
-            </View>
-            {/* Top Up */}
-            <View className="w-1/4 justify-center items-center space-y-2">
-              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
-                <Image
-                  source={require("../../../../assets/images/card-add.png")}
-                  placeholder={blurhash}
-                  contentFit="cover"
-                  transition={1000}
-                  className="w-full h-full flex-1"
-                />
+              {/* Top Up */}
+              <View className="w-1/4 justify-center items-center space-y-2">
+                <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                  <Image
+                    source={require("../../../../assets/images/card-add.png")}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={1000}
+                    className="w-full h-full flex-1"
+                  />
+                </View>
+                <Text className="text-white">Top Up</Text>
               </View>
-              <Text className="text-white">Top Up</Text>
-            </View>
-            {/* More */}
-            <View className="w-1/4 justify-center items-center space-y-2">
-              <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
-                <Image
-                  source={require("../../../../assets/images/more.png")}
-                  placeholder={blurhash}
-                  contentFit="cover"
-                  transition={1000}
-                  className="w-full h-full flex-1"
-                />
+              {/* More */}
+              <View className="w-1/4 justify-center items-center space-y-2">
+                <View className="w-10 h-10 overflow-hidden bg-[#3B363F] rounded-full p-2">
+                  <Image
+                    source={require("../../../../assets/images/more.png")}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={1000}
+                    className="w-full h-full flex-1"
+                  />
+                </View>
+                <Text className="text-white">More</Text>
               </View>
-              <Text className="text-white">More</Text>
             </View>
           </View>
-        </View>
 
           {/* Transactions Section */}
           {session && session.user && (
@@ -171,11 +171,6 @@ const HomeScreen = () => {
           )}
 
           {/* Another Graph if needed */}
-          {session && session.user && (
-            <View className="w-full justify-center items-center mt-4">
-              <CustomersGrowthGraph/>
-            </View>
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>

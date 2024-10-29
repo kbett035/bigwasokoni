@@ -4,8 +4,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { supabase } from '@/lib/supabase';
 import { useUserStore } from '@/store/useUserStore';
 
-interface Transaction {
-  amount: number;
+interface Customer {
   created_at: string;
 }
 
@@ -17,7 +16,7 @@ const CustomerGrowthGraph = () => {
   const screenWidth = Dimensions.get('window').width;
   const { session } = useUserStore();
 
-  const [growthData, setGrowthData] = useState<{ date: string; amount: number }[]>([]);
+  const [growthData, setGrowthData] = useState<{ date: string; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewType, setViewType] = useState<'today' | 'daily' | 'weekly' | 'monthly'>('daily');
 
@@ -28,21 +27,20 @@ const CustomerGrowthGraph = () => {
       if (!session?.user?.id) return;
 
       const { data, error } = await supabase
-        .from('transactions')
-        .select('amount, created_at')
-        .eq('user_id', session.user.id)
+        .from('customers')
+        .select('created_at')
         .order('created_at', { ascending: true });
 
       if (error) {
-        console.error("Error fetching transaction data:", error);
+        console.error("Error fetching customer data:", error);
         return;
       }
 
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Set to start of today
 
-      const aggregatedData: AggregatedData = data.reduce((acc: AggregatedData, transaction: Transaction) => {
-        let dateKey = new Date(transaction.created_at);
+      const aggregatedData: AggregatedData = data.reduce((acc: AggregatedData, customer: Customer) => {
+        let dateKey = new Date(customer.created_at);
 
         // Apply view type for date grouping
         if (viewType === 'today') {
@@ -55,13 +53,13 @@ const CustomerGrowthGraph = () => {
         }
 
         const formattedDate = dateKey.toISOString().split('T')[0];
-        acc[formattedDate] = (acc[formattedDate] || 0) + transaction.amount;
+        acc[formattedDate] = (acc[formattedDate] || 0) + 1; // Count customers per date
         return acc;
       }, {});
 
       const formattedData = Object.keys(aggregatedData).map((date) => ({
         date,
-        amount: aggregatedData[date],
+        count: aggregatedData[date],
       }));
 
       setGrowthData(formattedData);
@@ -83,8 +81,8 @@ const CustomerGrowthGraph = () => {
       ),
       datasets: [
         {
-          data: growthData.map((entry) => entry.amount),
-          color: (opacity = 1) => `rgba(13, 246, 158, ${opacity})`,
+          data: growthData.map((entry) => entry.count),
+          color: (opacity = 1) => `rgba(13, 246, 158, ${opacity})`, // Color for the graph line
           strokeWidth: 2,
         },
       ],
@@ -93,13 +91,20 @@ const CustomerGrowthGraph = () => {
 
   return (
     <View style={{ paddingVertical: 20 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 , textAlign:"center"  }}>Customer Growth</Text>
-      
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' }}>
+        Customer Growth
+      </Text>
+
       {/* View selection buttons */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10 }}>
         {['today', 'daily', 'weekly', 'monthly'].map((type) => (
           <TouchableOpacity key={type} onPress={() => setViewType(type as 'today' | 'daily' | 'weekly' | 'monthly')}>
-            <Text style={{ color: viewType === type ? '#0DF69E' : '#000', fontWeight: viewType === type ? 'bold' : 'normal' }}>
+            <Text
+              style={{
+                color: viewType === type ? '#0DF69E' : '#000',
+                fontWeight: viewType === type ? 'bold' : 'normal',
+              }}
+            >
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </Text>
           </TouchableOpacity>
@@ -113,7 +118,7 @@ const CustomerGrowthGraph = () => {
           data={getChartData()}
           width={screenWidth - 40}
           height={220}
-          yAxisSuffix=" KES"
+          yAxisSuffix=" Clients"
           chartConfig={{
             backgroundColor: '#fff',
             backgroundGradientFrom: '#f5f5f5',
