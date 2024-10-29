@@ -3,7 +3,7 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import HomeScreen from '../../tabs/home/HomeScreen';
 import OffersScreen from '../../tabs/offers/OffersScreen';
 import HistoryScreen from '../../tabs/history/HistoryScreen';
-import AlertScreen from '../../tabs/alerts/AlertScreen';
+import AlertScreen from '../../tabs/alerts/AlertsScreen';
 import ProfileScreen from '../../tabs/profile/ProfileScreen';
 
 const Stack = createStackNavigator();
@@ -21,7 +21,7 @@ const HomeNavigation = () => {
     >
       {/* Define Stack Screens */}
       <Stack.Screen name="HomeS" component={HomeScreen} />
-      <Stack.Screen name="Offers" component={OffersScreen} />
+      <Stack.Screen name="OffersS" component={OffersScreen} />
       <Stack.Screen name="History" component={HistoryScreen} />
       <Stack.Screen name="Alerts" component={AlertScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
