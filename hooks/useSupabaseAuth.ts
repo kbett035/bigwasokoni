@@ -55,7 +55,7 @@ export default function useSupabaseAuth() {
 
     const { data, error, status } = await supabase
       .from("profiles")
-      .select(`username, website, avatar_url`)
+      .select(`username, website, avatar_url, phone_number, email, payment_due_date`) // Added payment_due_date
       .eq("id", session.user.id)
       .single();
 
@@ -70,10 +70,16 @@ export default function useSupabaseAuth() {
     username,
     website,
     avatar_url,
+    phone_number,
+    email,
+    payment_due_date, // Added payment_due_date
   }: {
     username: string;
     website: string;
     avatar_url: string;
+    phone_number: string;
+    email: string;
+    payment_due_date: string; // Updated type
   }) {
     if (!session?.user) throw new Error("No user in the session!");
 
@@ -82,6 +88,9 @@ export default function useSupabaseAuth() {
       username,
       website,
       avatar_url,
+      phone_number,
+      email,
+      payment_due_date, // Included in the updates
       updated_at: new Date(),
     };
 

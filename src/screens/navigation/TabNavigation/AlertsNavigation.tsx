@@ -17,7 +17,7 @@ const AlertsNavigation = () => {
       }}
     >
       {/* Define Stack Screens */}
-      <Stack.Screen name="Alerts" component={AlertsScreen} />
+      <Stack.Screen name="AlertsS" component={AlertsScreen} />
       
     </Stack.Navigator>
   );
