@@ -1,93 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Switch, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUserStore } from '@/store/useUserStore';
+import Avatar from '@/src/components/Avatar';
 import useSupabaseAuth from '@/hooks/useSupabaseAuth';
+import { useUserStore } from '@/store/useUserStore';
 
 const ProfileScreen = () => {
-  const { getUserProfile, updateProfile, changePassword, signOut, getSubscriptionData } = useSupabaseAuth();
+  const { getUserProfile, updateProfile, signOut } = useSupabaseAuth();
   const { session } = useUserStore();
-
   const [profile, setProfile] = useState({
-    fullName: '',
     username: '',
-    email: '',
-    phone_number: '',
+    website: '',
     avatar_url: '',
+    phone_number: '',
+    email: '',
+    payment_due_date: '',
   });
   const [loading, setLoading] = useState(false);
-  const [password, setPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [remainingDays, setRemainingDays] = useState(null);
-  const [hasSubscription, setHasSubscription] = useState(false);
+  const [pushNotifications, setPushNotifications] = useState(false);
+  const [remainingDays, setRemainingDays] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchProfile = async () => {
       setLoading(true);
       try {
-        const { data: profileData, error: profileError } = await getUserProfile();
-        const { data: subscriptionData, error: subscriptionError } = await getSubscriptionData();
-
-        if (profileError) throw new Error(profileError.message);
-        if (subscriptionError || !subscriptionData) {
-          setHasSubscription(false);
+        const { data } = await getUserProfile();  // Fetch profile data from auth table
+        if (data) {  // Check if data is not null or undefined
+          setProfile({
+            username: data.username || '',
+            website: data.website || '',
+            avatar_url: data.avatar_url || '',
+            email: data.email || '',  // Pull email from auth table
+            phone_number: data.phone_number || '',
+            payment_due_date: data.payment_due_date || '',
+          });
+          calculateRemainingDays(data.payment_due_date);
         } else {
-          setHasSubscription(true);
-          calculateRemainingDays(subscriptionData.end_date);
+          Alert.alert("Error", "User profile data is not available.");
         }
-
-        setProfile({
-          fullName: profileData.fullName || '',
-          username: profileData.username || '',
-          email: profileData.email || '',
-          phone_number: profileData.phone_number || '',
-          avatar_url: profileData.avatar_url || '',
-        });
-      } catch (error) {
-        Alert.alert("Error", error.message);
-      } finally {
-        setLoading(false);
+      } catch (error: unknown) {
+        // Check if error is an instance of Error to access message
+        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+        Alert.alert("Error", "Failed to fetch profile: " + errorMessage);
       }
+      setLoading(false);
     };
-
-    if (session) fetchProfileData();
+    if (session) fetchProfile();
   }, [session]);
 
-  const calculateRemainingDays = (endDate) => {
-    const due = new Date(endDate);
-    const today = new Date();
-    const differenceInTime = due - today;
-    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-    setRemainingDays(differenceInDays);
+  const calculateRemainingDays = (dueDate: string) => {
+    if (!dueDate) return;
+    const due = new Date(dueDate);
+    let today = new Date();
+    let remaining = 0;
+
+    while (today < due) {
+      today = new Date(today.setDate(today.getDate() + 1));
+      const day = today.getDay();
+      if (day !== 0 && day !== 6) remaining++;
+    }
+    setRemainingDays(remaining);
   };
 
   const handleProfileUpdate = async () => {
     setLoading(true);
     const { error } = await updateProfile(profile);
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error", "Failed to update profile.");
     } else {
       Alert.alert("Success", "Profile updated successfully!");
-    }
-    setLoading(false);
-  };
-
-  const handleChangePassword = async () => {
-    setLoading(true);
-    const { error } = await changePassword(password, newPassword);
-    if (error) {
-      Alert.alert("Error", error.message);
-    } else {
-      Alert.alert("Success", "Password changed successfully!");
     }
     setLoading(false);
   };
@@ -95,180 +76,96 @@ const ProfileScreen = () => {
   const handleLogout = async () => {
     const { error } = await signOut();
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert("Error", "Failed to log out.");
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Profile Header */}
-        <View style={styles.header}>
-          <Image
-            source={{ uri: profile.avatar_url || 'https://via.placeholder.com/100' }}
-            style={styles.profileImage}
-          />
-          <Text style={styles.profileName}>{profile.fullName || 'User'}</Text>
-          <Text style={styles.profileUsername}>{profile.username}</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: '#F0F2F5', flexGrow: 1 }}>
+        <View className="w-full flex-row items-center mb-4 space-x-3">
+          <Avatar url={profile.avatar_url} size={60} onUpload={(filePath) => { /* Upload logic */ }} />
+          <View>
+            <Text className="text-lg font-bold text-neutral-800">{profile.username || 'User'}</Text>
+            <Text className="text-sm text-neutral-500">{profile.email}</Text>
+          </View>
         </View>
 
-        {/* User Information Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>User Information</Text>
-          <Text style={styles.label}>Email Address</Text>
-          <Text style={styles.infoText}>{profile.email}</Text>
-          <Text style={styles.label}>Phone Number</Text>
-          <Text style={styles.infoText}>{profile.phone_number}</Text>
+        <View className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+          <Text className="text-lg font-semibold text-neutral-700 mb-2">Account Settings</Text>
+
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm text-neutral-600">Username</Text>
+            <TextInput
+              value={profile.username}
+              onChangeText={(text) => setProfile({ ...profile, username: text })}
+              placeholder="Enter your username"
+              style={{ backgroundColor: '#F9F9F9', borderRadius: 8, padding: 10, flex: 1, textAlign: 'right' }}
+            />
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm text-neutral-600">Email</Text>
+            <Text className="text-right text-neutral-800 font-semibold">
+              {profile.email}  {/* Display email as read-only text */}
+            </Text>
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm text-neutral-600">Phone Number</Text>
+            <TextInput
+              value={profile.phone_number}
+              onChangeText={(text) => setProfile({ ...profile, phone_number: text })}
+              placeholder="Enter your phone number"
+              style={{ backgroundColor: '#F9F9F9', borderRadius: 8, padding: 10, flex: 1, textAlign: 'right' }}
+            />
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm text-neutral-600">Push Notifications</Text>
+            <Switch
+              value={pushNotifications}
+              onValueChange={setPushNotifications}
+              trackColor={{ false: '#767577', true: '#007AFF' }}
+              thumbColor={pushNotifications ? '#FFFFFF' : '#f4f3f4'}
+            />
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm text-neutral-600">Next Payment Due</Text>
+            <Text className="text-right text-neutral-800 font-semibold">
+              {remainingDays !== null ? `${remainingDays} days left` : 'Loading...'}
+            </Text>
+          </View>
         </View>
 
-        {/* Account Management Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account Management</Text>
-          <TextInput
-            placeholder="Update Name"
-            value={profile.fullName}
-            onChangeText={(text) => setProfile({ ...profile, fullName: text })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Current Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="New Password"
-            value={newPassword}
-            onChangeText={setNewPassword}
-            secureTextEntry
-            style={styles.input}
-          />
-          <TouchableOpacity onPress={handleProfileUpdate} style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Update Profile</Text>
+        {/* Conditional Upgrade/Renewal Section */}
+        {remainingDays !== null && remainingDays > 0 ? (
+          <View className="bg-green-500 rounded-lg p-4 mb-6">
+            <Text className="text-center text-white font-semibold">Your Subscription is Active</Text>
+          </View>
+        ) : (
+          <TouchableOpacity className="bg-[#FF3B30] rounded-lg p-4 mb-6">
+            <Text className="text-center text-white font-semibold">Renew Subscription</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleChangePassword} style={styles.actionButton}>
-            <Text style={styles.actionButtonText}>Change Password</Text>
-          </TouchableOpacity>
-        </View>
+        )}
 
-        {/* Subscription Details Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Subscription Details</Text>
-          <Text style={styles.infoText}>
-            {hasSubscription ? (remainingDays > 0 ? `Active: ${remainingDays} days remaining` : 'Subscription Expired') : 'No Active Subscription'}
+        <TouchableOpacity
+          onPress={handleProfileUpdate}
+          disabled={loading}
+          className={`bg-[#262626] rounded-lg p-4 ${loading ? 'opacity-50' : ''}`}
+        >
+          <Text className="text-center text-white font-semibold">
+            {loading ? 'Updating...' : 'Update Profile'}
           </Text>
-        </View>
+        </TouchableOpacity>
 
-        {/* Support and Help Center Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support and Help Center</Text>
-          <TouchableOpacity onPress={() => Alert.alert("Support", "Redirecting to support...")} style={styles.link}>
-            <Text style={styles.linkText}>FAQs</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("Support", "Redirecting to support...")} style={styles.link}>
-            <Text style={styles.linkText}>Contact Support</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Logout Button */}
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutButtonText}>Logout</Text>
+        <TouchableOpacity onPress={handleLogout} className="mt-4 border border-[#262626] rounded-lg p-4">
+          <Text className="text-center text-[#FF3B30] font-semibold">Log Out</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFdFF',
-  },
-  scrollContainer: {
-    padding: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  profileName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  profileUsername: {
-    color: '#888',
-    fontSize: 16,
-  },
-  section: {
-    backgroundColor: '#F8F8F8',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 10,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#FFFFFF',
-  },
-  actionButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginVertical: 5,
-  },
-  actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 10,
-  },
-  linkText: {
-    color: '#007AFF',
-    fontSize: 16,
-  },
-  logoutButton: {
-    backgroundColor: '#FF3B30',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  logoutButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default ProfileScreen;

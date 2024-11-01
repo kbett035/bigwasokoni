@@ -5,6 +5,7 @@ import { User } from "@supabase/supabase-js"; // Import the Supabase User type
 
 // Custom UserProfile type for profile data in 'profiles' table
 interface UserProfile {
+  payment_due_date: string;
   username: string;
   website: string;
   avatar_url: string;
