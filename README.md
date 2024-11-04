@@ -43,7 +43,8 @@
 
 <h3>Installation</h3>
 <ol>
-  <li><strong>Clone the Repository</strong>
+  <li><strong>Request Access</strong>: As this is a private repository, please request access from the repository owner via GitHub or by contacting <a href="mailto:bett@edracom.co.ke">bett@edracom.co.ke</a>.</li>
+  <li><strong>Clone the Repository</strong> (after receiving access)
     <pre><code>git clone https://github.com/kbett035/mobisokoni.git
 cd mobisokoni</code></pre>
   </li>
@@ -82,10 +83,10 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key_here</code></pre>
 <h2>Contributing</h2>
 <p>We welcome contributions from developers around the world! Here’s how you can get involved:</p>
 <ol>
-  <li><strong>Fork the Repository</strong> to your own GitHub account.</li>
+  <li><strong>Request Access</strong>: As this is a private repository, please contact the repository owner for access.</li>
   <li><strong>Create a New Branch</strong> for your changes with a descriptive name (e.g., <code>feature/transaction-history</code>).</li>
   <li><strong>Make Your Changes</strong> and test thoroughly.</li>
-  <li><strong>Submit a Pull Request</strong> to the main repository.</li>
+  <li><strong>Submit a Pull Request</strong> to the main repository for review.</li>
 </ol>
 
 <h3>Contribution Guidelines</h3>
@@ -96,7 +97,7 @@ REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key_here</code></pre>
 </ul>
 
 <h3>Issues</h3>
-<p>If you encounter any issues, feel free to open an <a href="https://github.com/kbett035/mobisokoni/issues">issue</a>. We encourage feedback and suggestions to improve the app!</p>
+<p>If you encounter any issues, feel free to open an issue on GitHub or reach out via email. We encourage feedback and suggestions to improve the app!</p>
 
 <h2>License</h2>
 <p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
